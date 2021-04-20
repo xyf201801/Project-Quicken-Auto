@@ -3,6 +3,8 @@ import asyncHandler from "express-async-handler";
 const router = express.Router();
 import Product from "../models/productModel.js";
 
+//GET api/products
+//Fetching all products
 router.get(
   "/",
   asyncHandler(async (req, res) => {
