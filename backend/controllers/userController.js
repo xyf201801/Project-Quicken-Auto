@@ -97,4 +97,36 @@ const getUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-export { authUser, registerUser, getUserProfile };
+//Update user profile
+//PUT /api/users/profile
+//Private access
+const updateUserProfile = asyncHandler(async (req, res) => {
+  //const user = await User.findById(req.user._id);
+
+  //this is whatever the current logged in user is
+  const user = await User.findById(req.user._id);
+
+  //returning res.json for the logged in user
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+      token: generateToken(updatedUser._id),
+    });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
+export { authUser, registerUser, getUserProfile, updateUserProfile };
