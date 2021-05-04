@@ -17,14 +17,15 @@ const App = () => {
       <Header />
       <main className="py-3">
         <Container>
+          <Route path="/" component={HomeScreen} exact />
+          <Route path="/search/:keyword" component={HomeScreen} />
           <Route path="/login" component={LoginScreen} exact />
-          <Route path="/register" component={RegisterScreen} exact />
           <Route path="/profile" component={ProfileScreen} exact />
+          <Route path="/register" component={RegisterScreen} exact />
           <Route path="/product/:id" component={ProductScreen} exact />
           {/* here this is the cart route and since the it can be optional
           we put a ? at the end */}
           <Route path="/cart/:id?" component={CartScreen} exact />
-          <Route path="/" component={HomeScreen} exact />
         </Container>
       </main>
       <Footer />
