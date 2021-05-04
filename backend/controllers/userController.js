@@ -28,12 +28,14 @@ const authUser = asyncHandler(async (req, res) => {
     //** if email and password matches return the json data back with the token which has the user._id embedded as the payload
     res.json({
       _id: user._id,
-      user: user.name,
+      name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
+      // Generate a JWT token with validated user id
       token: generateToken(user._id),
     });
   } else {
+    //Unauthorized Access
     res.status(401);
     throw new Error("Unrecognized email or password");
   }
@@ -63,7 +65,7 @@ const registerUser = asyncHandler(async (req, res) => {
   if (user) {
     res.status(201).json({
       _id: user._id,
-      user: user.name,
+      name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
       token: generateToken(user._id),
@@ -87,7 +89,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
   if (user) {
     res.json({
       _id: user._id,
-      user: user.name,
+      name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
     });
@@ -97,9 +99,8 @@ const getUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-//Update user profile
+//updating user profile
 //PUT /api/users/profile
-//Private access
 const updateUserProfile = asyncHandler(async (req, res) => {
   //const user = await User.findById(req.user._id);
 
@@ -116,7 +117,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 
     const updatedUser = await user.save();
 
-    res.json({
+    res.status(201).json({
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
