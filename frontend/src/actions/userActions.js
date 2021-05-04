@@ -1,28 +1,38 @@
+//login action which will make a request to login and get the token
+
 import axios from "axios";
 import {
+  USER_DETAILS_FAIL,
+  USER_DETAILS_REQUEST,
+  USER_DETAILS_SUCCESS,
   USER_LOGIN_FAIL,
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
   USER_LOGOUT,
+  USER_REGISTER_FAIL,
   USER_REGISTER_REQUEST,
   USER_REGISTER_SUCCESS,
-  USER_REGISTER_FAIL,
-  USER_DETAILS_REQUEST,
-  USER_DETAILS_SUCCESS,
-  USER_DETAILS_FAIL,
+  USER_UPDATE_PROFILE_FAIL,
+  USER_UPDATE_PROFILE_REQUEST,
+  USER_UPDATE_PROFILE_SUCCESS,
 } from "../constants/userConstants";
 
+//this will take in email and password
 export const login = (email, password) => async (dispatch) => {
   try {
     dispatch({
       type: USER_LOGIN_REQUEST,
     });
 
+    //making config object, b/c we are sending data in headers, a constant type application, JSON
+
     const config = {
       headers: {
+        //here passing in token for protected routes
         "Content-Type": "application/json",
       },
     };
+
     const { data } = await axios.post(
       "/api/users/login",
       { email, password },
@@ -34,6 +44,7 @@ export const login = (email, password) => async (dispatch) => {
       payload: data,
     });
 
+    //setting user to local storage
     localStorage.setItem("userInfo", JSON.stringify(data));
   } catch (error) {
     dispatch({
@@ -57,11 +68,15 @@ export const register = (name, email, password) => async (dispatch) => {
       type: USER_REGISTER_REQUEST,
     });
 
+    //making config object, b/c we are sending data in headers, a constant type application, JSON
+
     const config = {
       headers: {
+        //here passing in token for protected routes
         "Content-Type": "application/json",
       },
     };
+
     const { data } = await axios.post(
       "/api/users",
       { name, email, password },
@@ -78,6 +93,7 @@ export const register = (name, email, password) => async (dispatch) => {
       payload: data,
     });
 
+    //setting user to local storage
     localStorage.setItem("userInfo", JSON.stringify(data));
   } catch (error) {
     dispatch({
@@ -100,12 +116,16 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
       userLogin: { userInfo },
     } = getState();
 
+    //making config object, b/c we are sending data in headers, a constant type application, JSON
+
     const config = {
       headers: {
+        //here passing in token for protected routes
         "Content-Type": "application/json",
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
+
     const { data } = await axios.get(`/api/users/${id}`, config);
 
     dispatch({
@@ -115,6 +135,43 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: USER_DETAILS_FAIL,
+      payload:
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+export const updateUserProfile = (user) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: USER_UPDATE_PROFILE_REQUEST,
+    });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    //making config object, b/c we are sending data in headers, a constant type application, JSON
+
+    const config = {
+      headers: {
+        //here passing in token for protected routes
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    const { data } = await axios.put(`/api/users/profile`, user, config);
+
+    dispatch({
+      type: USER_UPDATE_PROFILE_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: USER_UPDATE_PROFILE_FAIL,
       payload:
         error.response && error.response.data.message
           ? error.response.data.message
