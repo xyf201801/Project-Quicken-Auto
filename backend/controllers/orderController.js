@@ -38,4 +38,34 @@ const addOrderItems = asyncHandler(async (req, res) => {
   }
 });
 
-export { addOrderItems };
+//GET order by ID
+//GET /api/orders/:id
+const getOrderById = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id).populate(
+    "user",
+    "name email"
+  );
+
+  if (order) {
+    res.json(order);
+  } else {
+    res.status(404);
+    throw new Error("Your order isn't found");
+  }
+});
+
+export { addOrderItems, getOrderById };
+
+// const getOrderById = asyncHandler(async (req, res) => {
+//   const order = await Order.findById(req.params.id).populate(
+//     'user',
+//     'name email'
+//   )
+
+//   if (order) {
+//     res.json(order)
+//   } else {
+//     res.status(404)
+//     throw new Error('Order not found')
+//   }
+// })
